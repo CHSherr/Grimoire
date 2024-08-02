@@ -1,8 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
-import { Axios } from "axios";
+import axios from "axios";
 
 export default function Home() {
   const [username, setUsername] = useState("");
@@ -14,22 +13,56 @@ export default function Home() {
     setPassword(event.target.value);
   }
 
-  function handleSubmit() {
+  async function handleLogin() {
     try {
-      Axios.post("/api/login", { username, password }).then((response) => {
-        console.log(response);
+      console.log(username, password);
+      const response = await axios.post("http://localhost:5001/auth/login", {
+        username,
+        password,
       });
+      localStorage.setItem("authToken", response.data.token);
+      axios
+        .get("http://localhost:5001/protected/login", {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+          },
+        })
+        .then((response) => {
+          console.log("Protected data:", response.data);
+        })
+        .catch((error) => {
+          console.error("Error accessing protected route:", error);
+        });
     } catch (error) {
       console.log(error);
     }
   }
+  async function handleRegister() {
+    try {
+      console.log(username, password);
+      const response = await axios.post("http://localhost:5001/auth/register", {
+        username,
+        password,
+      });
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
       <div className="flex flex-col space-y-4">
         <input value={username} onChange={handleUsernameChange}></input>
 
         <input value={password} onChange={handlePasswordChange}></input>
-        <button>Login</button>
+        <button onClick={handleLogin}>Login</button>
+      </div>
+      <div className="flex flex-col space-y-4">
+        <input value={username} onChange={handleUsernameChange}></input>
+
+        <input value={password} onChange={handlePasswordChange}></input>
+        <button onClick={handleRegister}>Register</button>
       </div>
     </main>
   );
