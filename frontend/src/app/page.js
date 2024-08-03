@@ -4,66 +4,23 @@ import { useState } from "react";
 import axios from "axios";
 
 export default function Home() {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  function handleUsernameChange(event) {
-    setUsername(event.target.value);
-  }
-  function handlePasswordChange(event) {
-    setPassword(event.target.value);
-  }
-
-  async function handleLogin() {
-    try {
-      console.log(username, password);
-      const response = await axios.post("http://localhost:5001/auth/login", {
-        username,
-        password,
-      });
-      localStorage.setItem("authToken", response.data.token);
-      axios
-        .get("http://localhost:5001/protected/login", {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
-          },
-        })
-        .then((response) => {
-          console.log("Protected data:", response.data);
-        })
-        .catch((error) => {
-          console.error("Error accessing protected route:", error);
-        });
-    } catch (error) {
-      console.log(error);
-    }
-  }
-  async function handleRegister() {
-    try {
-      console.log(username, password);
-      const response = await axios.post("http://localhost:5001/auth/register", {
-        username,
-        password,
-      });
-      console.log(response);
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="flex flex-col space-y-4">
-        <input value={username} onChange={handleUsernameChange}></input>
-
-        <input value={password} onChange={handlePasswordChange}></input>
-        <button onClick={handleLogin}>Login</button>
-      </div>
-      <div className="flex flex-col space-y-4">
-        <input value={username} onChange={handleUsernameChange}></input>
-
-        <input value={password} onChange={handlePasswordChange}></input>
-        <button onClick={handleRegister}>Register</button>
-      </div>
+    <main className="min-h-screen">
+      <nav className="grid grid-cols-6">
+        <p className="col-start-1">Grimoire</p>
+        <a
+          href="/login"
+          className="col-start-5 bg-blue-400 rounded-full border-2 border-gray-300 hover:bg-blue-500 text-center text-white"
+        >
+          Login
+        </a>
+        <a
+          href="/register"
+          className="col-start-6 bg-green-500 hover:bg-green-600 border-2 border-gray-300 rounded-full text-center text-white"
+        >
+          Register
+        </a>
+      </nav>
     </main>
   );
 }
